@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NAVIX - Configurações</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <!-- Cabeçalho Azul com Ícone -->
+  <div class="bg-blue-500 text-white p-4 flex items-center justify-between">
+    <div class="flex items-center">
+      <img src="NAVIX.png" alt="Logo NAVIX" class="h-8 w-8 mr-2 cursor-pointer">
+      <div class="text-xl font-semibold">NAVIX - Configurações</div>
+    </div>
+    <div class="flex items-center">
+      <span id="user-name" class="font-semibold"></span>
+      <button onclick="window.location.href='dashboard.html'" class="bg-blue-700 text-white px-3 py-1 rounded ml-4 hover:bg-blue-800">Voltar ao Dashboard</button>
+      <button onclick="logout()" class="bg-blue-700 text-white px-3 py-1 rounded ml-4 hover:bg-blue-800">Logout</button>
+    </div>
+  </div>
+
+  <!-- Conteúdo Principal -->
+  <div class="container mx-auto p-4">
+    <!-- Configurações de Alertas -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-xl font-semibold mb-4">Configurações de Alertas</h2>
+      <form id="alert-settings-form" class="space-y-4">
+        <div>
+          <label for="downtime-threshold" class="block text-sm font-medium text-gray-700">Limite de Indisponibilidade (horas)</label>
+          <input type="number" id="downtime-threshold" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" min="1">
+        </div>
+        <div>
+          <label for="maintenance-threshold" class="block text-sm font-medium text-gray-700">Limite para Manutenção Pendente (dias além da média)</label>
+          <input type="number" id="maintenance-threshold" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" min="1">
+        </div>
+        <div>
+          <label for="maintenance-duration-threshold" class="block text-sm font-medium text-gray-700">Limite de Duração de Manutenção (horas)</label>
+          <input type="number" id="maintenance-duration-threshold" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" min="1">
+        </div>
+        <div>
+          <label for="inspection-duration-threshold" class="block text-sm font-medium text-gray-700">Limite de Duração de Inspeção (horas)</label>
+          <input type="number" id="inspection-duration-threshold" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" min="1">
+        </div>
+        <div class="flex space-x-2">
+          <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Salvar Configurações</button>
+          <button type="button" onclick="resetSettings()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Restaurar Padrões</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="error-message" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded shadow-lg hidden"></div>
+  <div id="success-message" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded shadow-lg hidden"></div>
+
+  <script src="common.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>

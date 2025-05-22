@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NAVIX - Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
+    <div class="flex items-center justify-center mb-6">
+      <img id="navix-logo" src="NAVIX.png" alt="Logo NAVIX" class="h-35 w-35 mr-2 cursor-pointer">
+      <h1 class="text-2xl font-semibold text-blue-500"></h1>
+    </div>
+    <h2 class="text-xl font-semibold mb-4 text-center">Login</h2>
+    <form id="login-form" class="space-y-4 hidden">
+      <div>
+        <label for="username" class="block text-sm font-medium text-gray-700">Usuário</label>
+        <input type="text" id="username" list="usernames" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+        <datalist id="usernames"></datalist>
+      </div>
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">Senha</label>
+        <input type="password" id="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+      </div>
+      <div class="flex justify-end">
+        <button type="submit" id="login-button" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Entrar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal de Login do Desenvolvedor -->
+  <div id="dev-login-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+      <h2 class="text-lg font-semibold mb-4">Acesso ao Modo Desenvolvedor</h2>
+      <form id="dev-login-form" class="space-y-4">
+        <div>
+          <label for="dev-username" class="block text-sm font-medium text-gray-700">Usuário</label>
+          <input type="text" id="dev-username" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Digite o usuário" required>
+        </div>
+        <div>
+          <label for="dev-password" class="block text-sm font-medium text-gray-700">Senha</label>
+          <input type="password" id="dev-password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Digite a senha" required>
+        </div>
+        <div class="flex justify-end space-x-2">
+          <button type="button" onclick="closeDevLoginModal()" class="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-600">Cancelar</button>
+          <button type="submit" id="dev-login-button" class="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600">Entrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="error-message" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded shadow-lg hidden"></div>
+  <div id="success-message" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded shadow-lg hidden"></div>
+
+  <script src="common.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('Carregando index.html');
+
+      // Preencher datalist com usuários
+      const datalist = document.getElementById('usernames');
+      if (datalist) {
+        const users = window.loadUsers();
+        users.forEach(user => {
+          const option = document.createElement('option');
+          option.value = user.username;
+          datalist.appendChild(option);
+        });
+        console.log('Datalist preenchido com usuários:', users.map(u => u.username));
+      } else {
+        console.error('Datalist usernames não encontrado');
+        window.showError('Erro interno: datalist de usuários não encontrado.');
+      }
+
+      // Aplicar delay de 2 segundos antes de mostrar o formulário
+      setTimeout(() => {
+        const form = document.getElementById('login-form');
+        if (form) {
+          form.classList.remove('hidden');
+          console.log('Formulário de login exibido após delay.');
+        } else {
+          console.error('Formulário login-form não encontrado.');
+          window.showError('Erro interno: formulário de login não encontrado.');
+        }
+      }, 2000);
+
+      // Configurar formulário de login padrão
+      const form = document.getElementById('login-form');
+      const loginButton = document.getElementById('login-button');
+      if (form && loginButton) {
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          loginButton.disabled = true;
+          loginButton.textContent = 'Autenticando...';
+          const username = document.getElementById('username')?.value?.trim();
+          const password = document.getElementById('password')?.value?.trim();
+          console.log('Tentando login em index.html:', username);
+          if (window.loginUser(username, password)) {
+            console.log('Login bem-sucedido, redirecionando para dashboard.html');
+            window.location.href = 'dashboard.html';
+          } else {
+            console.log('Login falhou.');
+            loginButton.disabled = false;
+            loginButton.textContent = 'Entrar';
+          }
+        });
+      }
+
+      // Configurar cinco cliques no logo para abrir modal do desenvolvedor
+      const logo = document.getElementById('navix-logo');
+      if (logo) {
+        let clickCount = 0;
+        let clickTimeout;
+        logo.addEventListener('click', () => {
+          clickCount++;
+          console.log('Clique no logo:', clickCount);
+          clearTimeout(clickTimeout);
+          clickTimeout = setTimeout(() => {
+            clickCount = 0;
+            console.log('Contador de cliques resetado.');
+          }, 2000);
+          if (clickCount >= 5) {
+            clickCount = 0;
+            openDevLoginModal();
+          }
+        });
+      } else {
+        console.error('Logo navix-logo não encontrado.');
+        window.showError('Erro interno: logo não encontrada.');
+      }
+    });
+
+    function openDevLoginModal() {
+      console.log('Abrindo modal de login do desenvolvedor.');
+      const modal = document.getElementById('dev-login-modal');
+      const form = document.getElementById('dev-login-form');
+      const devLoginButton = document.getElementById('dev-login-button');
+      if (modal && form && devLoginButton) {
+        modal.classList.remove('hidden');
+        form.onsubmit = (e) => {
+          e.preventDefault();
+          devLoginButton.disabled = true;
+          devLoginButton.textContent = 'Autenticando...';
+          const username = document.getElementById('dev-username')?.value?.trim();
+          const password = document.getElementById('dev-password')?.value?.trim();
+          console.log('Submetendo login desenvolvedor:', username);
+          if (window.loginDeveloper(username, password)) {
+            console.log('Login desenvolvedor bem-sucedido, redirecionando.');
+            closeDevLoginModal();
+            window.location.href = 'developer.html';
+          } else {
+            console.log('Login desenvolvedor falhou.');
+            devLoginButton.disabled = false;
+            devLoginButton.textContent = 'Entrar';
+          }
+        };
+      } else {
+        console.error('Modal ou formulário não encontrado:', { modal, form, devLoginButton });
+        window.showError('Erro interno: modal de login não encontrado.');
+      }
+    }
+
+    function closeDevLoginModal() {
+      console.log('Fechando modal de login do desenvolvedor.');
+      const modal = document.getElementById('dev-login-modal');
+      const form = document.getElementById('dev-login-form');
+      const devLoginButton = document.getElementById('dev-login-button');
+      if (modal) {
+        modal.classList.add('hidden');
+        if (form) form.reset();
+        if (devLoginButton) {
+          devLoginButton.disabled = false;
+          devLoginButton.textContent = 'Entrar';
+        }
+      }
+    }
+  </script>
+</body>
+</html>

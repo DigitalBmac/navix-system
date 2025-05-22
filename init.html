@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inicializando</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: #3b82f6;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 5s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+  <!-- Cabeçalho com Ícone -->
+  <div class="bg-blue-500 text-white p-4 flex items-center justify-between">
+    <div class="flex items-center">
+      <img src="NAVIX.png" alt="Logo NAVIX" class="h-20 w-20 mr-2">
+      <div class="text-xl font-semibold">NAVIX</div>
+    </div>
+    <div></div>
+  </div>
+
+  <!-- Conteúdo Central -->
+  <div class="flex-grow flex flex-col items-center justify-center">
+    <img src="NAVIX.png" alt="Logo NAVIX" class="h-90 mb-4">
+    <div id="spinner" class="spinner"></div>
+    <p id="loading-message" class="mt-4 text-lg text-gray-700">Carregando banco de dados...</p>
+    <button id="login-button" class="hidden bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4">Acessar Sistema</button>
+    <br><p>Desenvolvido por CVMY</p>
+  </div>
+
+  <script>
+    const loginButton = document.getElementById('login-button');
+    const spinner = document.getElementById('spinner');
+    const loadingMessage = document.getElementById('loading-message');
+
+    // Dados de equipamentos (equivalents to equipments.json)
+    const equipmentsData = [
+      { "id": 1, "type": "Empilhadeira", "name": "Empilhadeira 01", "status": "Disponível", "history": [], "manufacturer": "Toyota", "hourmeter": 1200, "details": "Modelo 2020" },
+      { "id": 2, "type": "Empilhadeira", "name": "Empilhadeira 02", "status": "Manutenção", "history": [], "manufacturer": "Toyota", "hourmeter": 1500, "details": "Modelo 2021" },
+      { "id": 3, "type": "Empilhadeira", "name": "Empilhadeira 03", "status": "Indisponível", "history": [{ "status": "Indisponível", "timestamp": "2025-05-08T10:00:00Z", "details": "Falha mecânica", "pendingApproval": true }], "manufacturer": "Toyota", "hourmeter": 1300, "details": "Modelo 2020" },
+      { "id": 4, "type": "Empilhadeira", "name": "Empilhadeira 04", "status": "Inspeção", "history": [], "manufacturer": "Toyota", "hourmeter": 1100, "details": "Modelo 2019" },
+      { "id": 5, "type": "Guindaste Rodoviário", "name": "Guindaste Rodoviário 01", "status": "Disponível", "history": [], "manufacturer": "Liebherr", "hourmeter": 2000, "details": "Modelo 2022" },
+      { "id": 6, "type": "Guindaste Rodoviário", "name": "Guindaste Rodoviário 02", "status": "Manutenção", "history": [], "manufacturer": "Liebherr", "hourmeter": 2200, "details": "Modelo 2021" },
+      { "id": 7, "type": "Guindaste Rodoviário", "name": "Guindaste Rodoviário 03", "status": "Indisponível", "history": [{ "status": "Indisponível", "timestamp": "2025-05-06T12:00:00Z", "details": "Problema elétrico", "pendingApproval": true }], "manufacturer": "Liebherr", "hourmeter": 1900, "details": "Modelo 2020" },
+      { "id": 8, "type": "Guindaste Rodoviário", "name": "Guindaste Rodoviário 04", "status": "Inspeção", "history": [], "manufacturer": "Liebherr", "hourmeter": 1800, "details": "Modelo 2019" },
+      { "id": 9, "type": "Guindaste Portuário", "name": "Guindaste Portuário 01", "status": "Disponível", "history": [], "manufacturer": "Konecranes", "hourmeter": 3000, "details": "Modelo 2023" },
+      { "id": 10, "type": "Guindaste Portuário", "name": "Guindaste Portuário 02", "status": "Manutenção", "history": [], "manufacturer": "Konecranes", "hourmeter": 3200, "details": "Modelo 2022" },
+      { "id": 11, "type": "Guindaste Portuário", "name": "Guindaste Portuário 03", "status": "Indisponível", "history": [{ "status": "Indisponível", "timestamp": "2025-05-05T08:00:00Z", "details": "Avaria", "pendingApproval": true }], "manufacturer": "Konecranes", "hourmeter": 2900, "details": "Modelo 2021" },
+      { "id": 12, "type": "Caminhão Truck", "name": "Caminhão Truck 01", "status": "Disponível", "history": [], "manufacturer": "Volvo", "hourmeter": 4000, "details": "Modelo 2020" },
+      { "id": 13, "type": "Caminhão Truck", "name": "Caminhão Truck 02", "status": "Manutenção", "history": [], "manufacturer": "Volvo", "hourmeter": 4200, "details": "Modelo 2021" },
+      { "id": 14, "type": "Carreta", "name": "Carreta 01", "status": "Indisponível", "history": [{ "status": "Indisponível", "timestamp": "2025-05-07T15:00:00Z", "details": "Pneu furado", "pendingApproval": true }], "manufacturer": "Randon", "hourmeter": 3500, "details": "Modelo 2020" },
+      { "id": 15, "type": "Carreta", "name": "Carreta 02", "status": "Inspeção", "history": [], "manufacturer": "Randon", "hourmeter": 3400, "details": "Modelo 2019" },
+      { "id": 16, "type": "Carreta", "name": "Carreta 03", "status": "Disponível", "history": [], "manufacturer": "Randon", "hourmeter": 3300, "details": "Modelo 2021" },
+      { "id": 17, "type": "Prancha Baixa", "name": "Prancha Baixa 01", "status": "Manutenção", "history": [], "manufacturer": "Randon", "hourmeter": 2800, "details": "Modelo 2020" },
+      { "id": 18, "type": "Prancha Baixa", "name": "Prancha Baixa 02", "status": "Indisponível", "history": [{ "status": "Indisponível", "timestamp": "2025-05-08T11:00:00Z", "details": "Problema hidráulico", "pendingApproval": true }], "manufacturer": "Randon", "hourmeter": 2700, "details": "Modelo 2019" },
+      { "id": 19, "type": "Linha de Eixo", "name": "Linha de Eixo 01", "status": "Disponível", "history": [], "manufacturer": "Randon", "hourmeter": 2600, "details": "Modelo 2022" },
+      { "id": 20, "type": "Traquitana", "name": "Traquitana 01", "status": "Inspeção", "history": [], "manufacturer": "Custom", "hourmeter": 500, "details": "Modelo 2023" },
+      { "id": 21, "type": "Traquitana", "name": "Traquitana 02", "status": "Disponível", "history": [], "manufacturer": "Custom", "hourmeter": 450, "details": "Modelo 2022" },
+      { "id": 22, "type": "Bote", "name": "Bote 01", "status": "Manutenção", "history": [], "manufacturer": "Custom", "hourmeter": 300, "details": "Modelo 2021" },
+      { "id": 23, "type": "Bote", "name": "Bote 02", "status": "Indisponível", "history": [{ "status": "Indisponível", "timestamp": "2025-05-06T13:00:00Z", "details": "Motor danificado", "pendingApproval": true }], "manufacturer": "Custom", "hourmeter": 280, "details": "Modelo 2020" }
+    ];
+
+    if (!loginButton || !spinner || !loadingMessage) {
+      console.error('Elementos não encontrados:', { loginButton, spinner, loadingMessage });
+    } else {
+      // Carregar equipamentos no localStorage e mostrar botão após 5 segundos
+      setTimeout(() => {
+        try {
+          // Verificar se o localStorage já tem dados de equipamentos
+          const existingEquipments = localStorage.getItem('equipments');
+          if (!existingEquipments) {
+            localStorage.setItem('equipments', JSON.stringify(equipmentsData));
+            console.log('equipments.json carregado no localStorage');
+          } else {
+            console.log('equipments já existe no localStorage, pulando inicialização');
+          }
+          loginButton.classList.remove('hidden');
+          spinner.classList.add('hidden');
+          loadingMessage.classList.add('hidden');
+          console.log('Botão Acessar Sistema exibido, spinner e mensagem escondidos');
+        } catch (e) {
+          console.error('Erro ao carregar equipamentos:', e.message);
+          loginButton.classList.remove('hidden');
+          spinner.classList.add('hidden');
+          loadingMessage.classList.add('hidden');
+        }
+      }, 5000);
+
+      // Adicionar evento de clique
+      loginButton.addEventListener('click', () => {
+        console.log('Botão Acessar Sistema clicado');
+        window.location.href = 'index.html';
+      });
+    }
+  </script>
+</body>
+</html>

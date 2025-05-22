@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NAVIX - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/imask"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <!-- Cabeçalho Azul com Ícone -->
+  <div class="bg-blue-500 text-white p-4 flex items-center justify-between">
+    <div class="flex items-center">
+      <img src="NAVIX.png" alt="Logo NAVIX" class="h-8 w-8 mr-2 cursor-pointer">
+      <div class="text-xl font-semibold">NAVIX - Dashboard</div>
+    </div>
+    <div class="flex items-center">
+      <span id="user-name" class="font-semibold"></span>
+      <button onclick="logout()" class="bg-blue-700 text-white px-3 py-1 rounded ml-4 hover:bg-blue-800">Logout</button>
+    </div>
+  </div>
+
+  <!-- Conteúdo Principal -->
+  <div class="container mx-auto p-4">
+    <!-- Botões de Navegação -->
+    <div class="flex space-x-2 mb-6">
+      <button onclick="window.location.href='equipments.html'" class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800">Lista de Equipamentos</button>
+      <button onclick="window.location.href='history.html'" class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800">Histórico</button>
+      <button onclick="window.location.href='reports.html'" class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800">Relatórios</button>
+      <button onclick="window.location.href='settings.html'" class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800">Configurações</button>
+    </div>
+
+    <!-- Notificações -->
+    <div class="bg-white p-4 rounded-lg shadow-md mb-6">
+      <h2 class="text-xl font-semibold mb-4">Notificações</h2>
+      <div id="notifications-list">
+        <p class="text-center text-gray-600 py-4">Carregando notificações...</p>
+      </div>
+    </div>
+
+    <!-- Contadores de Status -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white p-4 rounded-lg shadow-md text-center cursor-pointer" onclick="filterByStatus('Disponível')">
+        <h3 class="text-lg font-semibold text-green-600">Disponível</h3>
+        <p id="available-count" class="text-2xl font-bold">0</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow-md text-center cursor-pointer" onclick="filterByStatus('Indisponível')">
+        <h3 class="text-lg font-semibold text-red-600">Indisponível</h3>
+        <p id="unavailable-count" class="text-2xl font-bold">0</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow-md text-center cursor-pointer" onclick="filterByStatus('Manutenção')">
+        <h3 class="text-lg font-semibold text-yellow-600">Manutenção</h3>
+        <p id="maintenance-count" class="text-2xl font-bold">0</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow-md text-center cursor-pointer" onclick="filterByStatus('Inspeção')">
+        <h3 class="text-lg font-semibold text-blue-600">Inspeção</h3>
+        <p id="inspection-count" class="text-2xl font-bold">0</p>
+      </div>
+    </div>
+
+    <!-- Filtro de Busca -->
+    <div class="bg-white p-4 rounded-lg shadow-md mb-6">
+      <h2 class="text-xl font-semibold mb-4">Filtrar Equipamentos</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label for="search-input" class="block text-sm font-medium text-gray-700">Buscar por Nome ou Tipo</label>
+          <input type="text" id="search-input" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Digite para buscar...">
+        </div>
+        <div>
+          <label for="status-filter" class="block text-sm font-medium text-gray-700">Filtrar por Status</label>
+          <select id="status-filter" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Todos</option>
+            <option value="Disponível">Disponível</option>
+            <option value="Indisponível">Indisponível</option>
+            <option value="Manutenção">Manutenção</option>
+            <option value="Inspeção">Inspeção</option>
+          </select>
+        </div>
+        <div class="flex items-end">
+          <button onclick="applyFilters()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Aplicar Filtros</button>
+          <button onclick="resetFilters()" class="ml-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Limpar Filtros</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista de Equipamentos -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+      <h2 class="text-xl font-semibold mb-4">Lista de Equipamentos</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="px-4 py-2 border">Nome</th>
+              <th class="px-4 py-2 border">Tipo</th>
+              <th class="px-4 py-2 border">Status</th>
+              <th class="px-4 py-2 border">Última Ocorrência</th>
+              <th class="px-4 py-2 border">Responsável</th>
+              <th class="px-4 py-2 border">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="equipment-list">
+            <tr>
+              <td colspan="6" class="text-center text-gray-600 py-4">Carregando equipamentos...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Aprovações Pendentes (apenas para admin) -->
+    <div id="pending-approvals-section" class="bg-white p-6 rounded-lg shadow-md hidden">
+      <h2 class="text-xl font-semibold mb-4">Aprovações Pendentes</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="px-4 py-2 border">Equipamento</th>
+              <th class="px-4 py-2 border">Data/Hora</th>
+              <th class="px-4 py-2 border">Detalhes</th>
+              <th class="px-4 py-2 border">Responsável</th>
+              <th class="px-4 py-2 border">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="pending-approvals">
+            <tr>
+              <td colspan="5" class="text-center text-gray-600 py-4">Carregando aprovações pendentes...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="error-message" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded shadow-lg hidden"></div>
+  <div id="success-message" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded shadow-lg hidden"></div>
+
+  <script src="common.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

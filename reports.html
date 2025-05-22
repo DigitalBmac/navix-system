@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NAVIX - Relatórios</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <!-- Cabeçalho Azul com Ícone -->
+  <div class="bg-blue-500 text-white p-4 flex items-center justify-between">
+    <div class="flex items-center">
+      <img src="NAVIX.png" alt="Logo NAVIX" class="h-8 w-8 mr-2 cursor-pointer">
+      <div class="text-xl font-semibold">NAVIX - Relatórios</div>
+    </div>
+    <div class="flex items-center">
+      <span id="user-name" class="font-semibold"></span>
+      <button onclick="window.location.href='dashboard.html'" class="bg-blue-700 text-white px-3 py-1 rounded ml-4 hover:bg-blue-800">Voltar ao Dashboard</button>
+      <button onclick="window.location.href='equipments.html'" class="bg-blue-700 text-white px-3 py-1 rounded ml-4 hover:bg-blue-800">Lista de Equipamentos</button>
+      <button onclick="window.location.href='history.html'" class="bg-blue-700 text-white px-3 py-1 rounded ml-4 hover:bg-blue-800">Histórico</button>
+      <button onclick="logout()" class="bg-blue-700 text-white px-3 py-1 rounded ml-4 hover:bg-blue-800">Logout</button>
+    </div>
+  </div>
+
+  <!-- Conteúdo Principal -->
+  <div class="container mx-auto p-4">
+    <!-- Filtros -->
+    <div class="bg-white p-4 rounded-lg shadow-md mb-6">
+      <h2 class="text-xl font-semibold mb-4">Filtros</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+        <div>
+          <label for="equipment-filter" class="block text-sm font-medium text-gray-700">Filtrar por Equipamento</label>
+          <select id="equipment-filter" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Todos os Equipamentos</option>
+          </select>
+        </div>
+        <div>
+          <label for="start-date" class="block text-sm font-medium text-gray-700">Data Inicial</label>
+          <input type="date" id="start-date" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div>
+          <label for="end-date" class="block text-sm font-medium text-gray-700">Data Final</label>
+          <input type="date" id="end-date" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div class="flex items-end">
+          <button onclick="applyFilters()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Aplicar Filtros</button>
+          <button onclick="resetFilters()" class="ml-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Limpar Filtros</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico de Indisponibilidade -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+      <h2 class="text-xl font-semibold mb-4">Tempo de Indisponibilidade por Equipamento</h2>
+      <div id="downtime-chart"></div>
+    </div>
+
+    <!-- Tabela de Relatórios -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-xl font-semibold mb-4">Relatórios de Desempenho</h2>
+      <div class="flex space-x-2 mb-4">
+        <button onclick="exportToPDF()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Exportar para PDF</button>
+        <button onclick="exportToCSV()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Exportar para CSV</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="px-4 py-2 border">Equipamento</th>
+              <th class="px-4 py-2 border">Tipo</th>
+              <th class="px-4 py-2 border">Tempo de Indisponibilidade (h)</th>
+              <th class="px-4 py-2 border">Tempo Médio Entre Manutenções (dias)</th>
+              <th class="px-4 py-2 border">Disponibilidade (%)</th>
+            </tr>
+          </thead>
+          <tbody id="report-table-body">
+            <tr>
+              <td colspan="5" class="text-center text-gray-600 py-4">Carregando relatórios...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="error-message" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded shadow-lg hidden"></div>
+  <div id="success-message" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded shadow-lg hidden"></div>
+
+  <script src="common.js"></script>
+  <script src="extract.js"></script>
+  <script src="reports.js"></script>
+</body>
+</html>

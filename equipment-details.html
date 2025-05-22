@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NAVIX - Detalhes do Equipamento</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <!-- Cabeçalho Azul com Ícone -->
+  <div class="bg-blue-500 text-white p-4 flex items-center justify-between">
+    <div class="flex items-center">
+      <img src="NAVIX.png" alt="Logo NAVIX" class="h-8 w-8 mr-2 cursor-pointer">
+      <div class="text-xl font-semibold">NAVIX - Detalhes do Equipamento</div>
+    </div>
+    <div class="flex items-center">
+      <span id="user-name" class="font-semibold"></span>
+      <button onclick="logout()" class="bg-blue-700 text-white px-3 py-1 rounded ml-4 hover:bg-blue-800">Logout</button>
+    </div>
+  </div>
+
+  <!-- Conteúdo Principal -->
+  <div class="container mx-auto p-4">
+    <!-- Botões de Navegação -->
+    <div class="flex space-x-2 mb-6">
+      <button onclick="window.location.href='dashboard.html'" class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800">Voltar ao Dashboard</button>
+      <button onclick="window.location.href='equipments.html'" class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800">Lista de Equipamentos</button>
+      <button onclick="window.location.href='history.html'" class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800">Histórico</button>
+      <button onclick="window.location.href='reports.html'" class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800">Relatórios</button>
+    </div>
+
+    <!-- Detalhes do Equipamento -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+      <h2 class="text-xl font-semibold mb-4">Detalhes do Equipamento</h2>
+      <div id="equipment-details" class="space-y-2">
+        <p><strong>Nome:</strong> <span id="equipment-name">Carregando...</span></p>
+        <p><strong>Tipo:</strong> <span id="equipment-type">Carregando...</span></p>
+        <p><strong>Status:</strong> <span id="equipment-status">Carregando...</span></p>
+        <p><strong>Fabricante:</strong> <span id="equipment-manufacturer">Carregando...</span></p>
+        <p><strong>Horímetro:</strong> <span id="equipment-hourmeter">Carregando...</span> h</p>
+        <p><strong>Detalhes:</strong> <span id="equipment-description">Carregando...</span></p>
+      </div>
+    </div>
+
+    <!-- Informações Críticas -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+      <h2 class="text-xl font-semibold mb-4">Informações Críticas</h2>
+      <div id="critical-info" class="space-y-2">
+        <p><strong>Última Manutenção:</strong> <span id="last-maintenance">Carregando...</span></p>
+        <p><strong>Última Inspeção:</strong> <span id="last-inspection">Carregando...</span></p>
+        <p><strong>Última Indisponibilidade:</strong> <span id="last-unavailability">Carregando...</span></p>
+      </div>
+    </div>
+
+    <!-- Gráfico de Status -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+      <h2 class="text-xl font-semibold mb-4">Evolução do Status</h2>
+      <div class="flex space-x-2 mb-4">
+        <button onclick="exportChartToPDF()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Exportar Gráfico para PDF</button>
+      </div>
+      <div id="status-chart"></div>
+    </div>
+
+    <!-- Ações -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+      <h2 class="text-xl font-semibold mb-4">Ações</h2>
+      <div id="operation-selector"></div>
+      <div id="operation-details"></div>
+    </div>
+
+    <!-- Histórico de Eventos -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-xl font-semibold mb-4">Histórico de Eventos</h2>
+      <!-- Filtros -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div>
+          <label for="status-filter" class="block text-sm font-medium text-gray-700">Filtrar por Status</label>
+          <select id="status-filter" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Todos</option>
+            <option value="Disponível">Disponível</option>
+            <option value="Indisponível">Indisponível</option>
+            <option value="Manutenção">Manutenção</option>
+            <option value="Inspeção">Inspeção</option>
+          </select>
+        </div>
+        <div>
+          <label for="date-filter" class="block text-sm font-medium text-gray-700">Filtrar por Período (após)</label>
+          <input type="date" id="date-filter" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div class="flex items-end">
+          <button onclick="applyFilters()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Aplicar Filtros</button>
+          <button onclick="resetFilters()" class="ml-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Limpar Filtros</button>
+        </div>
+      </div>
+      <!-- Tabela de Eventos -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="px-4 py-2 border cursor-pointer" onclick="sortTable('timestamp')">Data/Hora</th>
+              <th class="px-4 py-2 border cursor-pointer" onclick="sortTable('status')">Status</th>
+              <th class="px-4 py-2 border">Detalhes</th>
+              <th class="px-4 py-2 border">Responsável</th>
+            </tr>
+          </thead>
+          <tbody id="equipment-history-body">
+            <tr>
+              <td colspan="4" class="text-center text-gray-600 py-4">Carregando histórico...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Paginação -->
+      <div class="mt-4 flex justify-between items-center">
+        <button id="prev-page" onclick="changePage(-1)" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-300" disabled>Anterior</button>
+        <span id="page-info">Página 1 de 1</span>
+        <button id="next-page" onclick="changePage(1)" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-300" disabled>Próxima</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="error-message" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded shadow-lg hidden"></div>
+  <div id="success-message" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded shadow-lg hidden"></div>
+
+  <script src="common.js"></script>
+  <script src="extract.js"></script>
+  <script src="details.js"></script>
+  <script src="details-render.js"></script>
+  <script src="details-operation.js"></script>
+  <script src="details-action.js"></script>
+</body>
+</html>
