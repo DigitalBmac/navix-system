@@ -6,7 +6,7 @@
     }
   ],
   "functions": {
-    "api/upadateStatus.js": {
+    "api/updateStatus.js": {
       "memory": 128,
       "maxDuration": 10
     }
